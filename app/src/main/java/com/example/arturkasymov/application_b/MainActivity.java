@@ -1,6 +1,9 @@
 package com.example.arturkasymov.application_b;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -8,33 +11,38 @@ import android.os.CountDownTimer;
 import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView mTimer;
 
+    private final String EXTRA_FRAGMENT_ID = "com.example.arturkasymov.application_a.FRAGMENT_ID";
+    private String mFragmentID;
     private final String EXTRA_IMAGE_URL = "com.example.arturkasymov.application_a.image_URL";
-    private String image_URL;
+    private String mImage_URL;
+
+    private final String URL_KEY = "com.example.arturkasymov.application_a.image_URL";
+    private final String ID_KEY = "com.example.arturkasymov.application_a.FRAGMENT_ID";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTimer= (TextView) findViewById(R.id.textView);
-        if (getIntent().hasExtra(EXTRA_IMAGE_URL)) {
-            image_URL = getIntent().getExtras().getString(EXTRA_IMAGE_URL);
-            
+        Fragment fragment=null;
+        if (getIntent().hasExtra(EXTRA_FRAGMENT_ID)){
+            fragment=new ImageFragment();
+            mImage_URL = getIntent().getExtras().getString(EXTRA_IMAGE_URL);
+            mFragmentID= getIntent().getExtras().getString(EXTRA_FRAGMENT_ID);
+            Bundle bundle = new Bundle();
+            bundle.putString(URL_KEY, mImage_URL);
+            bundle.putString(ID_KEY, mFragmentID);
+            fragment.setArguments(bundle);
 
-        } else {
-
-            ////////////////////////////  Впихнуть в фрагмент
-            new CountDownTimer(10000, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    mTimer.setText( getString(R.string.forTimerpart_1)+ " "
-                            + millisUntilFinished / 1000 +" " +getString(R.string.forTimerpart_2));
-                }
-                public void onFinish() {
-                    finish();
-                }
-            } .start();
-           /////////////////////////////
+        } else
+        {
+            fragment= new LauncherFragment();
         }
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragmentContainer, fragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.commit();
+
     }
 }
