@@ -3,13 +3,20 @@ package com.example.arturkasymov.application_b;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.InputStream;
+import java.net.URL;
 
 
 public class ImageFragment extends Fragment {
@@ -24,6 +31,7 @@ public class ImageFragment extends Fragment {
     private static final String KEY_STATUS = "status";
     private static final String KEY_TIME = "time";
     private static final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
+    ImageView imageView;
 
     public ImageFragment() {
         // Required empty public constructor
@@ -53,6 +61,10 @@ public class ImageFragment extends Fragment {
 
         }
 
+        imageView = v.findViewById(R.id.imageView);
+        loadImageFromUrl(mImage_URL);
+
+
         ///// for testing data
         TextView tv= (TextView) v.findViewById(R.id.textViewForTesting);
         tv.setText("URL= "+ mImage_URL+ "\n"+"FragmentID="+ mFragmentID );
@@ -62,6 +74,23 @@ public class ImageFragment extends Fragment {
         addRow();
 
         return v;
+    }
+
+    private void loadImageFromUrl(String url) {
+        Picasso.with(getContext()).load(url).placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_launcher)
+                .into(imageView,new  com.squareup.picasso.Callback(){
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
     }
 
     public void  deleteAllRows(){
