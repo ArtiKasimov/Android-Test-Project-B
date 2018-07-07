@@ -1,11 +1,17 @@
 package com.example.arturkasymov.application_b;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +20,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 
 
 public class ImageFragment extends Fragment {
@@ -32,6 +45,8 @@ public class ImageFragment extends Fragment {
     private static final String KEY_TIME = "time";
     private static final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
     ImageView imageView;
+    TextView tv;
+    File myDir;
 
     public ImageFragment() {
         // Required empty public constructor
@@ -62,16 +77,19 @@ public class ImageFragment extends Fragment {
         }
 
         imageView = v.findViewById(R.id.imageView);
+        addRow();
         loadImageFromUrl(mImage_URL);
 
 
         ///// for testing data
-        TextView tv= (TextView) v.findViewById(R.id.textViewForTesting);
+        tv= (TextView) v.findViewById(R.id.textViewForTesting);
         tv.setText("URL= "+ mImage_URL+ "\n"+"FragmentID="+ mFragmentID );
+        //tv.setText("Downloading" );
         /////
 
         //deleteAllRows();
         addRow();
+        loadPicture2();
 
         return v;
     }
@@ -123,4 +141,49 @@ public class ImageFragment extends Fragment {
         }
     }
 
+    public void loadPicture2(){
+        Picasso.with(getContext())
+                .load(mImage_URL)
+                .into(new Target() {
+                          @Override
+                          public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                              try {
+                                  String root = Environment.getExternalStorageDirectory().toString();
+
+                                  if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+                                      myDir = new File(root + "/BIGDIG/test/B/");
+                                  }else{
+                                      myDir = new File(getContext().getFilesDir() + "/BIGDIG/test/B/");
+                                  }
+
+                                  if (!myDir.exists()) {
+                                      myDir.mkdirs();
+                                  }
+                                  myDir.createNewFile();
+
+                                  String name = new Date().toString() + ".jpg";
+                                  //String name = "MyPicture.jpg";
+                                  myDir = new File(myDir, name);
+                                  FileOutputStream out = new FileOutputStream(myDir);
+                                  bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+                                  out.flush();
+                                  out.close();
+                                 // mImage_URL = "succesful";
+                              } catch(Exception e){
+                                  mImage_URL = "1";
+                              }
+                          }
+
+                          @Override
+                          public void onBitmapFailed(Drawable errorDrawable) {
+                          }
+
+                          @Override
+                          public void onPrepareLoad(Drawable placeHolderDrawable) {
+                          }
+                      }
+                );
+        tv.setText("SUCCESFUL");
+    }
 }
