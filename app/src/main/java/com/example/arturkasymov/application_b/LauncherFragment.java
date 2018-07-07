@@ -1,7 +1,7 @@
 package com.example.arturkasymov.application_b;
 
+
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
@@ -41,6 +41,9 @@ public class LauncherFragment extends Fragment {
         } .start();
 
 
+
         return  v;
     }
+
+
 }

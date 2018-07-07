@@ -1,5 +1,7 @@
 package com.example.arturkasymov.application_b;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +20,10 @@ public class ImageFragment extends Fragment {
     private final String HISTORY_FRAGMENT_ID= "2";
     private String mImage_URL;
     private String mFragmentID;
+    private static final String KEY_REFERENCE = "reference";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_TIME = "time";
+    private static final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
 
     public ImageFragment() {
         // Required empty public constructor
@@ -52,9 +58,40 @@ public class ImageFragment extends Fragment {
         tv.setText("URL= "+ mImage_URL+ "\n"+"FragmentID="+ mFragmentID );
         /////
 
+        //deleteAllRows();
+        addRow();
+
         return v;
     }
 
+    public void  deleteAllRows(){
+        try {
+            ContentResolver contentResolver = getContext().getContentResolver();
+            String selections = null;
+            String[] selectionsArgs = null;
+            int numberRowsDeleted = contentResolver.delete(Uri.parse(CONTENT_URI), selections,
+                    selectionsArgs);
+           // mTimer.setText(""+ numberRowsDeleted);
+        }catch (Exception ex){
+           // mTimer.setText("exeption");
+        }
 
+    }
+
+    public void  addRow(){
+        try {
+            ContentResolver contentResolver = getContext().getContentResolver();
+            ContentValues values = new ContentValues();
+            //values.put(KEY_ID, re_cord.getId());
+            values.put(KEY_REFERENCE, mImage_URL);
+            values.put(KEY_STATUS, 1);
+            values.put(KEY_TIME,0);
+
+            contentResolver.insert(Uri.parse(CONTENT_URI),values);
+            //mTimer.setText("successful");
+        }catch (Exception ex){
+           // mTimer.setText("exeption");
+        }
+    }
 
 }
