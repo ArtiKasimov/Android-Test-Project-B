@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -68,6 +69,8 @@ public class ImageFragment extends Fragment {
         mImage_URL = bundle.getString(URL_KEY);
         mFragmentID= bundle.getString(ID_KEY);
 
+
+
         if( mFragmentID==TEST_FRAGMENT_ID){
 
 
@@ -80,16 +83,24 @@ public class ImageFragment extends Fragment {
         addRow();
         loadImageFromUrl(mImage_URL);
 
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            //String root = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+
+            myDir = new File("/sdcard/BIGDIG/test/B");
+        }else{
+            myDir = new File(getContext().getFilesDir() + "/BIGDIG/test/B/");
+        }
+
+        if (!myDir.exists()) {
+            myDir.mkdirs();
+        }
+
+        addRow();
+        loadPicture2();
 
         ///// for testing data
         tv= (TextView) v.findViewById(R.id.textViewForTesting);
         tv.setText("URL= "+ mImage_URL+ "\n"+"FragmentID="+ mFragmentID );
-        //tv.setText("Downloading" );
-        /////
-
-        //deleteAllRows();
-        addRow();
-        loadPicture2();
 
         return v;
     }
@@ -148,28 +159,15 @@ public class ImageFragment extends Fragment {
                           @Override
                           public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                               try {
-                                  String root = Environment.getExternalStorageDirectory().toString();
-
-                                  if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-                                      myDir = new File(root + "/BIGDIG/test/B/");
-                                  }else{
-                                      myDir = new File(getContext().getFilesDir() + "/BIGDIG/test/B/");
-                                  }
-
-                                  if (!myDir.exists()) {
-                                      myDir.mkdirs();
-                                  }
-                                  myDir.createNewFile();
 
                                   String name = new Date().toString() + ".jpg";
-                                  //String name = "MyPicture.jpg";
                                   myDir = new File(myDir, name);
                                   FileOutputStream out = new FileOutputStream(myDir);
                                   bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 
                                   out.flush();
                                   out.close();
-                                 // mImage_URL = "succesful";
+                                  mImage_URL = "succesful";
                               } catch(Exception e){
                                   mImage_URL = "1";
                               }
@@ -184,6 +182,6 @@ public class ImageFragment extends Fragment {
                           }
                       }
                 );
-        tv.setText("SUCCESFUL");
+        //tv.setText("SUCCESFUL");
     }
 }
