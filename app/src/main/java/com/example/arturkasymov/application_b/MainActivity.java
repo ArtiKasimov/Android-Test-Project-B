@@ -30,15 +30,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final String URL_KEY = "com.example.arturkasymov.application_a.image_URL";
     private final String ID_KEY = "com.example.arturkasymov.application_a.FRAGMENT_ID";
+    private final String CASE = "case";
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
 
 
         File myDir;
@@ -57,15 +55,28 @@ public class MainActivity extends AppCompatActivity {
         if (!myDir.exists()) {
         myDir.mkdirs();
         }
+        Toast toast;
 
         Fragment fragment=null;
         if (getIntent().hasExtra(EXTRA_FRAGMENT_ID)){
             fragment=new ImageFragment();
             mImage_URL = getIntent().getExtras().getString(EXTRA_IMAGE_URL);
+            toast = Toast.makeText(this,mImage_URL,5);
+            toast.show();
             mFragmentID= getIntent().getExtras().getString(EXTRA_FRAGMENT_ID);
+            toast = Toast.makeText(this,mFragmentID,5);
+            toast.show();
+            String namber = getIntent().getStringExtra("ID");
+            toast = Toast.makeText(this,namber,5);
+            toast.show();
             Bundle bundle = new Bundle();
             bundle.putString(URL_KEY, mImage_URL);
             bundle.putString(ID_KEY, mFragmentID);
+            if (mFragmentID.equals("1")){
+                bundle.putInt(CASE,1);
+            }else {
+                bundle.putInt(CASE,2);
+            }
             fragment.setArguments(bundle);
 
         } else

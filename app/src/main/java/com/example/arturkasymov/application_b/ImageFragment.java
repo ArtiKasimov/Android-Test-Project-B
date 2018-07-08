@@ -45,6 +45,8 @@ public class ImageFragment extends Fragment {
     private static final String KEY_STATUS = "status";
     private static final String KEY_TIME = "time";
     private static final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
+    private final String CASE = "case";
+    private static int situation;
     ImageView imageView;
     TextView tv;
     File myDir;
@@ -68,34 +70,29 @@ public class ImageFragment extends Fragment {
         Bundle bundle = this.getArguments();
         mImage_URL = bundle.getString(URL_KEY);
         mFragmentID= bundle.getString(ID_KEY);
-
-
-
-        if( mFragmentID==TEST_FRAGMENT_ID){
-
-
-        } else  if( mFragmentID==HISTORY_FRAGMENT_ID)
-        {
-
-        }
+        situation = bundle.getInt(CASE);
 
         imageView = v.findViewById(R.id.imageView);
-        addRow();
-        loadImageFromUrl(mImage_URL);
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-            //String root = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+        if(situation == 1){
+            addRow();
+            loadImageFromUrl(mImage_URL);
+        } else{
 
-            myDir = new File("/sdcard/BIGDIG/test/B");
-        }else{
-            myDir = new File(getContext().getFilesDir() + "/BIGDIG/test/B/");
+            loadImageFromUrl(mImage_URL);
+            Toast toast;
+            toast = Toast.makeText(getContext(),"must be delated",5);
+            toast.show();
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+                myDir = new File("/sdcard/BIGDIG/test/B");
+            }else{
+                myDir = new File(getContext().getFilesDir() + "/BIGDIG/test/B/");
+            }
+            if (!myDir.exists()) {
+                myDir.mkdirs();
+            }
+            loadPicture2();
         }
-
-        if (!myDir.exists()) {
-            myDir.mkdirs();
-        }
-        
-        loadPicture2();
 
         ///// for testing data
         tv= (TextView) v.findViewById(R.id.textViewForTesting);
@@ -135,6 +132,10 @@ public class ImageFragment extends Fragment {
 
     }
 
+   // public String getRow(){
+
+    //}
+
     public void  addRow(){
         try {
             ContentResolver contentResolver = getContext().getContentResolver();
@@ -142,7 +143,7 @@ public class ImageFragment extends Fragment {
             //values.put(KEY_ID, re_cord.getId());
             values.put(KEY_REFERENCE, mImage_URL);
             values.put(KEY_STATUS, 1);
-            values.put(KEY_TIME,0);
+            values.put(KEY_TIME, new Date().toString());
 
             contentResolver.insert(Uri.parse(CONTENT_URI),values);
             //mTimer.setText("successful");
