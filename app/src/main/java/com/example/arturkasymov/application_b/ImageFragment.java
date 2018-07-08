@@ -97,14 +97,20 @@ public class ImageFragment extends Fragment {
                 myDir.mkdirs();
             }
             loadPicture2();
-            v.postDelayed(new Runnable() {
+
+            new Thread(new Runnable() {
+                @Override
                 public void run() {
                     delete(id);
+                }
+            }).start();
+            v.postDelayed(new Runnable() {
+                public void run() {
                     Toast toast;
                     toast = Toast.makeText(getContext(),"delated",10);
                     toast.show();
                 }
-            }, 4000);
+            }, 5000);
 
         }
 
