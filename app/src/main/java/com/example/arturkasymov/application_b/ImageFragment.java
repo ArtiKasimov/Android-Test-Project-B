@@ -94,8 +94,7 @@ public class ImageFragment extends Fragment {
         if (!myDir.exists()) {
             myDir.mkdirs();
         }
-
-        addRow();
+        
         loadPicture2();
 
         ///// for testing data
