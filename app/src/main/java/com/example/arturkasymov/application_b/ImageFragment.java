@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -37,10 +38,12 @@ public class ImageFragment extends Fragment {
 
     private final String URL_KEY = "com.example.arturkasymov.application_a.image_URL";
     private final String ID_KEY = "com.example.arturkasymov.application_a.FRAGMENT_ID";
-    private final String TEST_FRAGMENT_ID= "1";
-    private final String HISTORY_FRAGMENT_ID= "2";
     private String mImage_URL;
+    private int id;
+    private int status;
+    private String data;
     private String mFragmentID;
+    public static final String KEY_ID = "id";
     private static final String KEY_REFERENCE = "reference";
     private static final String KEY_STATUS = "status";
     private static final String KEY_TIME = "time";
@@ -50,6 +53,8 @@ public class ImageFragment extends Fragment {
     ImageView imageView;
     TextView tv;
     File myDir;
+
+
 
     public ImageFragment() {
         // Required empty public constructor
@@ -71,17 +76,19 @@ public class ImageFragment extends Fragment {
         mImage_URL = bundle.getString(URL_KEY);
         mFragmentID= bundle.getString(ID_KEY);
         situation = bundle.getInt(CASE);
-
         imageView = v.findViewById(R.id.imageView);
 
         if(situation == 1){
             addRow();
             loadImageFromUrl(mImage_URL);
         } else{
-
+            id = Integer.parseInt(bundle.getString("namber"));
+            getRow(++id);
             loadImageFromUrl(mImage_URL);
             Toast toast;
-            toast = Toast.makeText(getContext(),"must be delated",5);
+            toast = Toast.makeText(getContext(),"must be delated",10);
+            toast.show();
+            toast = Toast.makeText(getContext(),mImage_URL+" "+ status+" "+data,10);
             toast.show();
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
                 myDir = new File("/sdcard/BIGDIG/test/B");
@@ -132,9 +139,22 @@ public class ImageFragment extends Fragment {
 
     }
 
-   // public String getRow(){
+    public void getRow(int id){
+        ContentResolver contentResolver = getContext().getContentResolver();
+        String selection = KEY_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(id)};
 
-    //}
+        Cursor cursor = contentResolver.query(Uri.parse(CONTENT_URI),new String[]{KEY_ID,
+                KEY_REFERENCE, KEY_STATUS, KEY_TIME}, selection,selectionArgs, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        //Integer.parseInt(cursor.getString(0));
+        mImage_URL = cursor.getString(1);
+        status = Integer.parseInt(cursor.getString(2));
+        data = cursor.getString(3);
+    }
 
     public void  addRow(){
         try {

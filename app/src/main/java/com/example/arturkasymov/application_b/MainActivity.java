@@ -61,17 +61,18 @@ public class MainActivity extends AppCompatActivity {
         if (getIntent().hasExtra(EXTRA_FRAGMENT_ID)){
             fragment=new ImageFragment();
             mImage_URL = getIntent().getExtras().getString(EXTRA_IMAGE_URL);
-            toast = Toast.makeText(this,mImage_URL,5);
-            toast.show();
+            //toast = Toast.makeText(this,mImage_URL,5);
+            //toast.show();
             mFragmentID= getIntent().getExtras().getString(EXTRA_FRAGMENT_ID);
-            toast = Toast.makeText(this,mFragmentID,5);
-            toast.show();
+            //toast = Toast.makeText(this,mFragmentID,5);
+            //toast.show();
             String namber = getIntent().getStringExtra("ID");
-            toast = Toast.makeText(this,namber,5);
-            toast.show();
+            //toast = Toast.makeText(this,namber,5);
+            //toast.show();
             Bundle bundle = new Bundle();
             bundle.putString(URL_KEY, mImage_URL);
             bundle.putString(ID_KEY, mFragmentID);
+            bundle.putString("namber", namber);
             if (mFragmentID.equals("1")){
                 bundle.putInt(CASE,1);
             }else {
