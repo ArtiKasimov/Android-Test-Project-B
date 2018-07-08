@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,11 +49,9 @@ public class ImageFragment extends Fragment {
     private static final String KEY_STATUS = "status";
     private static final String KEY_TIME = "time";
     private static final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
-    private final String CASE = "case";
-    private static int situation;
-    ImageView imageView;
-    TextView tv;
-    File myDir;
+
+    private ImageView imageView;
+    private File myDir;
 
 
 
@@ -75,15 +74,14 @@ public class ImageFragment extends Fragment {
         Bundle bundle = this.getArguments();
         mImage_URL = bundle.getString(URL_KEY);
         mFragmentID= bundle.getString(ID_KEY);
-        situation = bundle.getInt(CASE);
         imageView = v.findViewById(R.id.imageView);
 
-        if(situation == 1){
+        if(mFragmentID.equals("1")){
             addRow();
             loadImageFromUrl(mImage_URL);
         } else{
             id = Integer.parseInt(bundle.getString("namber"));
-            getRow(++id);
+            getRow(id);
             loadImageFromUrl(mImage_URL);
             Toast toast;
             toast = Toast.makeText(getContext(),"must be delated",10);
@@ -100,10 +98,6 @@ public class ImageFragment extends Fragment {
             }
             loadPicture2();
         }
-
-        ///// for testing data
-        tv= (TextView) v.findViewById(R.id.textViewForTesting);
-        tv.setText("URL= "+ mImage_URL+ "\n"+"FragmentID="+ mFragmentID );
 
         return v;
     }
@@ -132,9 +126,8 @@ public class ImageFragment extends Fragment {
             String[] selectionsArgs = null;
             int numberRowsDeleted = contentResolver.delete(Uri.parse(CONTENT_URI), selections,
                     selectionsArgs);
-           // mTimer.setText(""+ numberRowsDeleted);
-        }catch (Exception ex){
-           // mTimer.setText("exeption");
+        }catch (Exception e){
+            Log.e("Deleting rows", ""+e);
         }
 
     }
@@ -150,7 +143,6 @@ public class ImageFragment extends Fragment {
         if (cursor != null)
             cursor.moveToFirst();
 
-        //Integer.parseInt(cursor.getString(0));
         mImage_URL = cursor.getString(1);
         status = Integer.parseInt(cursor.getString(2));
         data = cursor.getString(3);
@@ -160,15 +152,14 @@ public class ImageFragment extends Fragment {
         try {
             ContentResolver contentResolver = getContext().getContentResolver();
             ContentValues values = new ContentValues();
-            //values.put(KEY_ID, re_cord.getId());
             values.put(KEY_REFERENCE, mImage_URL);
             values.put(KEY_STATUS, 1);
             values.put(KEY_TIME, new Date().toString());
 
             contentResolver.insert(Uri.parse(CONTENT_URI),values);
-            //mTimer.setText("successful");
+
         }catch (Exception ex){
-           // mTimer.setText("exeption");
+
         }
     }
 
@@ -187,9 +178,9 @@ public class ImageFragment extends Fragment {
 
                                   out.flush();
                                   out.close();
-                                  mImage_URL = "succesful";
+
                               } catch(Exception e){
-                                  mImage_URL = "1";
+                                  Log.e("Downloading", ""+e);
                               }
                           }
 
@@ -202,6 +193,5 @@ public class ImageFragment extends Fragment {
                           }
                       }
                 );
-        //tv.setText("SUCCESFUL");
     }
 }
