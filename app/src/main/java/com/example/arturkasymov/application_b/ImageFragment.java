@@ -83,11 +83,11 @@ public class ImageFragment extends Fragment {
             id = Integer.parseInt(bundle.getString("namber"));
             getRow(id);
             loadImageFromUrl(mImage_URL);
-            Toast toast;
-            toast = Toast.makeText(getContext(),"must be delated",10);
-            toast.show();
-            toast = Toast.makeText(getContext(),mImage_URL+" "+ status+" "+data,10);
-            toast.show();
+            //Toast toast;
+            //toast = Toast.makeText(getContext(),"must be delated",10);
+            //toast.show();
+            //toast = Toast.makeText(getContext(),mImage_URL+" "+ status+" "+data,10);
+            //toast.show();
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
                 myDir = new File("/sdcard/BIGDIG/test/B");
             }else{
@@ -97,6 +97,15 @@ public class ImageFragment extends Fragment {
                 myDir.mkdirs();
             }
             loadPicture2();
+            v.postDelayed(new Runnable() {
+                public void run() {
+                    delete(id);
+                    Toast toast;
+                    toast = Toast.makeText(getContext(),"delated",10);
+                    toast.show();
+                }
+            }, 4000);
+
         }
 
         return v;
@@ -119,17 +128,11 @@ public class ImageFragment extends Fragment {
                 });
     }
 
-    public void  deleteAllRows(){
-        try {
-            ContentResolver contentResolver = getContext().getContentResolver();
-            String selections = null;
-            String[] selectionsArgs = null;
-            int numberRowsDeleted = contentResolver.delete(Uri.parse(CONTENT_URI), selections,
-                    selectionsArgs);
-        }catch (Exception e){
-            Log.e("Deleting rows", ""+e);
-        }
-
+    public void delete(int id){
+        ContentResolver contentResolver = getContext().getContentResolver();
+        String selection = KEY_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(id)};
+        contentResolver.delete(Uri.parse(CONTENT_URI),selection,selectionArgs);
     }
 
     public void getRow(int id){
