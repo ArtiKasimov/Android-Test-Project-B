@@ -82,32 +82,33 @@ public class ImageFragment extends Fragment {
 
         } else{
             id = Integer.parseInt(bundle.getString("namber"));
-            getRow(id);
+            int inputStatus = getRow(id);
             loadImageFromUrl(mImage_URL);
-
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-                myDir = new File("/sdcard/BIGDIG/test/B");
-            }else{
-                myDir = new File(getContext().getFilesDir() + "/BIGDIG/test/B/");
-            }
-            if (!myDir.exists()) {
-                myDir.mkdirs();
-            }
-            loadPicture2();
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    delete(id);
+            if (inputStatus == 1) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                    myDir = new File("/sdcard/BIGDIG/test/B");
+                } else {
+                    myDir = new File(getContext().getFilesDir() + "/BIGDIG/test/B/");
                 }
-            }).start();
-            v.postDelayed(new Runnable() {
-                public void run() {
-                    Toast toast;
-                    toast = Toast.makeText(getContext(),"delated",10);
-                    toast.show();
+                if (!myDir.exists()) {
+                    myDir.mkdirs();
                 }
-            }, 5000);
+                loadPicture2();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        delete(id);
+                    }
+                }).start();
+                v.postDelayed(new Runnable() {
+                    public void run() {
+                        Toast toast;
+                        toast = Toast.makeText(getContext(), "delated", 10);
+                        toast.show();
+                    }
+                }, 5000);
+            }
 
         }
 
