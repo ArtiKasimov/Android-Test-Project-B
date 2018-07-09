@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -80,14 +79,11 @@ public class ImageFragment extends Fragment {
         if(mFragmentID.equals("1")){
             addRow();
             loadImageFromUrl(mImage_URL);
-            updateRow();
-
 
         } else{
             id = Integer.parseInt(bundle.getString("namber"));
             getRow(id);
             loadImageFromUrl(mImage_URL);
-            updateRow();
 
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
                 myDir = new File("/sdcard/BIGDIG/test/B");
@@ -132,12 +128,12 @@ public class ImageFragment extends Fragment {
 
                     @Override
                     public void onSuccess() {
-                        status = 1;
+                        updateRow(id,1);
                     }
 
                     @Override
                     public void onError() {
-                        status = 2;
+                        updateRow(id, 2);
                     }
                 });
     }
@@ -149,24 +145,23 @@ public class ImageFragment extends Fragment {
         contentResolver.delete(Uri.parse(CONTENT_URI),selection,selectionArgs);
     }
 
-    public void updateRow(){
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                Toast toast;
-                toast = Toast.makeText(getContext(),"qqq" + status,10);
-                toast.show();
-                getRow(id);
-                ContentResolver contentResolver = getContext().getContentResolver();
-                ContentValues values = new ContentValues();
-                values.put(KEY_REFERENCE, mImage_URL);
-                values.put(KEY_STATUS, status);
-                values.put(KEY_TIME, data);
-                String selection = KEY_ID + "=?";
-                String[] selectionArgs = new String[]{String.valueOf(id)};
-                contentResolver.update(Uri.parse(CONTENT_URI),values,selection,selectionArgs);
-            }
-        }, 1700);// if set less delay, row update before method "onError" will be performed!!
-
+    public void updateRow(int id, int status){
+        Toast toast;
+        if (status == 1){
+            toast = Toast.makeText(getContext(),"loaded",10);
+        }else{
+            toast = Toast.makeText(getContext(),"error",10);
+        }
+        toast.show();
+        getRow(id);
+        ContentResolver contentResolver = getContext().getContentResolver();
+        ContentValues values = new ContentValues();
+        values.put(KEY_REFERENCE, mImage_URL);
+        values.put(KEY_STATUS, status);
+        values.put(KEY_TIME, data);
+        String selection = KEY_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(id)};
+        contentResolver.update(Uri.parse(CONTENT_URI),values,selection,selectionArgs);
 
     }
 
