@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Додаток Б</string>
+    <string name="forTimerpart_1">Додаток Б не є самостійним додатком і буде закрито через </string>
+    <string name="forTimerpart_2">секунд</string>
+</resources>
