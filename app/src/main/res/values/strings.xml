@@ -2,6 +2,6 @@
     <string name="app_name">Application B</string>
     <string name="forTimerpart_1">Application B is not a stand-alone application and will be closed after </string>
     <string name="forTimerpart_2">seconds</string>
-
+    <string name="massageDel">deleted</string>
 
 </resources>

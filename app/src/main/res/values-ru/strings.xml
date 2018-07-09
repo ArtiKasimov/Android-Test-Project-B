@@ -2,5 +2,5 @@
     <string name="app_name">Приложение Б</string>
     <string name="forTimerpart_1">Приложение Б не является самостоятельным приложением и будет закрыто через </string>
     <string name="forTimerpart_2">секунд</string>
-
+    <string name="massageDel">Удалено</string>
 </resources>

@@ -29,10 +29,11 @@ public class ImageFragment extends Fragment {
     private int id;
     private String data;
     private String mFragmentID;
-    public final String KEY_ID = "id";
+    private final String KEY_ID = "id";
     private final String KEY_REFERENCE = "reference";
     private final String KEY_STATUS = "status";
     private final String KEY_TIME = "time";
+    private final String KEY_ROW_ID = "namber";
     private final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
 
     private ImageView imageView;
@@ -63,7 +64,7 @@ public class ImageFragment extends Fragment {
             loadImageFromUrl(mImage_URL);
 
         } else{
-            id = Integer.parseInt(bundle.getString("namber"));
+            id = Integer.parseInt(bundle.getString(KEY_ROW_ID));
             int inputStatus = getRow(id);
             loadImageFromUrl(mImage_URL);
             if (inputStatus == 1) {
@@ -83,13 +84,14 @@ public class ImageFragment extends Fragment {
                         delete(id);
                     }
                 }).start();
-                v.postDelayed(new Runnable() {
-                    public void run() {
-                        Toast toast;
-                        toast = Toast.makeText(getContext(), "delated", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                }, 15000);
+
+                //v.postDelayed(new Runnable() {
+                //    public void run() {
+                //        Toast toast;
+                //        toast = Toast.makeText(getContext(), "delated", Toast.LENGTH_SHORT);
+                //        toast.show();
+                //    }
+                //}, 15000);
             }
         }
         return v;
@@ -97,19 +99,19 @@ public class ImageFragment extends Fragment {
 
     private void loadImageFromUrl(String url) {
         Picasso.with(getContext()).load(url)
-                .error(R.mipmap.ic_launcher)
-                .into(imageView,new  com.squareup.picasso.Callback(){
+        .error(R.mipmap.ic_launcher)
+        .into(imageView,new  com.squareup.picasso.Callback(){
 
-                    @Override
-                    public void onSuccess() {
-                        updateRow(id,1);
-                    }
+            @Override
+            public void onSuccess() {
+                updateRow(id,1);
+            }
 
-                    @Override
-                    public void onError() {
-                        updateRow(id, 2);
-                    }
-                });
+            @Override
+            public void onError() {
+                updateRow(id, 2);
+            }
+        });
     }
 
     public void delete(int id){
@@ -167,30 +169,40 @@ public class ImageFragment extends Fragment {
 
     public void loadPicture2(){
         Picasso.with(getContext())
-                .load(mImage_URL)
-                .into(new Target() {
-                          @Override
-                          public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                              try {
-                                  String name = new Date().toString() + ".jpg";
-                                  myDir = new File(myDir, name);
-                                  FileOutputStream out = new FileOutputStream(myDir);
-                                  bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                                  out.flush();
-                                  out.close();
-                              } catch(Exception e){
-                                  e.printStackTrace();
-                              }
+        .load(mImage_URL)
+        .into(new Target() {
+                  @Override
+                  public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                      try {
+                          String name;
+                          boolean isPNG = mImage_URL.length() - mImage_URL.lastIndexOf(".png") == 4;
+                          FileOutputStream out;
+                          if (isPNG){
+                              name = new Date().toString() + ".png";
+                              myDir = new File(myDir, name);
+                              out = new FileOutputStream(myDir);
+                              bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                          }else {
+                              name = new Date().toString() + ".jpg";
+                              myDir = new File(myDir, name);
+                              out = new FileOutputStream(myDir);
+                              bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                           }
-
-                          @Override
-                          public void onBitmapFailed(Drawable errorDrawable) {
-                          }
-
-                          @Override
-                          public void onPrepareLoad(Drawable placeHolderDrawable) {
-                          }
+                          out.flush();
+                          out.close();
+                      } catch(Exception e){
+                          e.printStackTrace();
                       }
-                );
+                  }
+
+                  @Override
+                  public void onBitmapFailed(Drawable errorDrawable) {
+                  }
+
+                  @Override
+                  public void onPrepareLoad(Drawable placeHolderDrawable) {
+                  }
+              }
+        );
     }
 }
