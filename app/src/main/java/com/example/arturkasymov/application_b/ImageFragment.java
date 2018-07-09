@@ -29,11 +29,11 @@ public class ImageFragment extends Fragment {
     private int id;
     private String data;
     private String mFragmentID;
-    public static final String KEY_ID = "id";
-    private static final String KEY_REFERENCE = "reference";
-    private static final String KEY_STATUS = "status";
-    private static final String KEY_TIME = "time";
-    private static final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
+    public final String KEY_ID = "id";
+    private final String KEY_REFERENCE = "reference";
+    private final String KEY_STATUS = "status";
+    private final String KEY_TIME = "time";
+    private final String CONTENT_URI = "content://com.misha.database.provider.MyContentProvider/refs";
 
     private ImageView imageView;
     private File myDir;
