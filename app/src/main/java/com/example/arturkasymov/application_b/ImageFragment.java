@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -41,7 +42,7 @@ public class ImageFragment extends Fragment {
     private final String ID_KEY = "com.example.arturkasymov.application_a.FRAGMENT_ID";
     private String mImage_URL;
     private int id;
-    private int status;
+    private int status = 3;
     private String data;
     private String mFragmentID;
     public static final String KEY_ID = "id";
@@ -79,15 +80,15 @@ public class ImageFragment extends Fragment {
         if(mFragmentID.equals("1")){
             addRow();
             loadImageFromUrl(mImage_URL);
+            updateRow();
+
+
         } else{
             id = Integer.parseInt(bundle.getString("namber"));
             getRow(id);
             loadImageFromUrl(mImage_URL);
-            //Toast toast;
-            //toast = Toast.makeText(getContext(),"must be delated",10);
-            //toast.show();
-            //toast = Toast.makeText(getContext(),mImage_URL+" "+ status+" "+data,10);
-            //toast.show();
+            updateRow();
+
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
                 myDir = new File("/sdcard/BIGDIG/test/B");
             }else{
@@ -118,18 +119,25 @@ public class ImageFragment extends Fragment {
     }
 
     private void loadImageFromUrl(String url) {
-        Picasso.with(getContext()).load(url).placeholder(R.mipmap.ic_launcher)
+        Picasso.Listener p = new Picasso.Listener() {
+            @Override
+            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                status = 2;
+            }
+        };
+        Picasso.with(getContext()).load(url)
+                //.placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
                 .into(imageView,new  com.squareup.picasso.Callback(){
 
                     @Override
                     public void onSuccess() {
-
+                        status = 1;
                     }
 
                     @Override
                     public void onError() {
-
+                        status = 2;
                     }
                 });
     }
@@ -141,7 +149,28 @@ public class ImageFragment extends Fragment {
         contentResolver.delete(Uri.parse(CONTENT_URI),selection,selectionArgs);
     }
 
-    public void getRow(int id){
+    public void updateRow(){
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                Toast toast;
+                toast = Toast.makeText(getContext(),"qqq" + status,10);
+                toast.show();
+                getRow(id);
+                ContentResolver contentResolver = getContext().getContentResolver();
+                ContentValues values = new ContentValues();
+                values.put(KEY_REFERENCE, mImage_URL);
+                values.put(KEY_STATUS, status);
+                values.put(KEY_TIME, data);
+                String selection = KEY_ID + "=?";
+                String[] selectionArgs = new String[]{String.valueOf(id)};
+                contentResolver.update(Uri.parse(CONTENT_URI),values,selection,selectionArgs);
+            }
+        }, 1700);// if set less delay, row update before method "onError" will be performed!!
+
+
+    }
+
+    public int getRow(int id){
         ContentResolver contentResolver = getContext().getContentResolver();
         String selection = KEY_ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(id)};
@@ -153,8 +182,9 @@ public class ImageFragment extends Fragment {
             cursor.moveToFirst();
 
         mImage_URL = cursor.getString(1);
-        status = Integer.parseInt(cursor.getString(2));
+        int status = Integer.parseInt(cursor.getString(2));
         data = cursor.getString(3);
+        return status;
     }
 
     public void  addRow(){
@@ -162,10 +192,12 @@ public class ImageFragment extends Fragment {
             ContentResolver contentResolver = getContext().getContentResolver();
             ContentValues values = new ContentValues();
             values.put(KEY_REFERENCE, mImage_URL);
-            values.put(KEY_STATUS, 1);
+            values.put(KEY_STATUS, 3);
             values.put(KEY_TIME, new Date().toString());
 
-            contentResolver.insert(Uri.parse(CONTENT_URI),values);
+            Uri uri = contentResolver.insert(Uri.parse(CONTENT_URI),values);
+            id = Integer.parseInt(uri.getLastPathSegment());
+
 
         }catch (Exception ex){
 
