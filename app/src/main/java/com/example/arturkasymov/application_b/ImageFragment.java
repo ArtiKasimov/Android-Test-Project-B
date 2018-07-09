@@ -1,37 +1,23 @@
 package com.example.arturkasymov.application_b;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 
 
@@ -41,7 +27,6 @@ public class ImageFragment extends Fragment {
     private final String ID_KEY = "com.example.arturkasymov.application_a.FRAGMENT_ID";
     private String mImage_URL;
     private int id;
-    private int status = 3;
     private String data;
     private String mFragmentID;
     public static final String KEY_ID = "id";
@@ -53,12 +38,9 @@ public class ImageFragment extends Fragment {
     private ImageView imageView;
     private File myDir;
 
-
-
     public ImageFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,26 +86,17 @@ public class ImageFragment extends Fragment {
                 v.postDelayed(new Runnable() {
                     public void run() {
                         Toast toast;
-                        toast = Toast.makeText(getContext(), "delated", 10);
+                        toast = Toast.makeText(getContext(), "delated", Toast.LENGTH_SHORT);
                         toast.show();
                     }
-                }, 5000);
+                }, 15000);
             }
-
         }
-
         return v;
     }
 
     private void loadImageFromUrl(String url) {
-        Picasso.Listener p = new Picasso.Listener() {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                status = 2;
-            }
-        };
         Picasso.with(getContext()).load(url)
-                //.placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
                 .into(imageView,new  com.squareup.picasso.Callback(){
 
@@ -147,13 +120,6 @@ public class ImageFragment extends Fragment {
     }
 
     public void updateRow(int id, int status){
-        Toast toast;
-        if (status == 1){
-            toast = Toast.makeText(getContext(),"loaded",10);
-        }else{
-            toast = Toast.makeText(getContext(),"error",10);
-        }
-        toast.show();
         getRow(id);
         ContentResolver contentResolver = getContext().getContentResolver();
         ContentValues values = new ContentValues();
@@ -163,7 +129,6 @@ public class ImageFragment extends Fragment {
         String selection = KEY_ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(id)};
         contentResolver.update(Uri.parse(CONTENT_URI),values,selection,selectionArgs);
-
     }
 
     public int getRow(int id){
@@ -171,8 +136,10 @@ public class ImageFragment extends Fragment {
         String selection = KEY_ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(id)};
 
-        Cursor cursor = contentResolver.query(Uri.parse(CONTENT_URI),new String[]{KEY_ID,
-                KEY_REFERENCE, KEY_STATUS, KEY_TIME}, selection,selectionArgs, null);
+        Cursor cursor = contentResolver.query(Uri.parse(CONTENT_URI),
+                new String[]{KEY_ID,
+                KEY_REFERENCE, KEY_STATUS, KEY_TIME},
+                selection,selectionArgs, null);
 
         if (cursor != null)
             cursor.moveToFirst();
@@ -193,10 +160,8 @@ public class ImageFragment extends Fragment {
 
             Uri uri = contentResolver.insert(Uri.parse(CONTENT_URI),values);
             id = Integer.parseInt(uri.getLastPathSegment());
-
-
         }catch (Exception ex){
-
+            //ex.printStackTrace();
         }
     }
 
@@ -207,17 +172,14 @@ public class ImageFragment extends Fragment {
                           @Override
                           public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                               try {
-
                                   String name = new Date().toString() + ".jpg";
                                   myDir = new File(myDir, name);
                                   FileOutputStream out = new FileOutputStream(myDir);
                                   bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
                                   out.flush();
                                   out.close();
-
                               } catch(Exception e){
-                                  Log.e("Downloading", ""+e);
+                                  e.printStackTrace();
                               }
                           }
 

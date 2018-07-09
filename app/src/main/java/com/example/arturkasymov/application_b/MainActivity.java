@@ -25,22 +25,16 @@ public class MainActivity extends AppCompatActivity {
 
     private final String EXTRA_FRAGMENT_ID = "com.example.arturkasymov.application_a.FRAGMENT_ID";
     private final String EXTRA_IMAGE_URL = "com.example.arturkasymov.application_a.image_URL";
+    private final String URL_KEY = "com.example.arturkasymov.application_a.image_URL";
+    private final String ID_KEY = "com.example.arturkasymov.application_a.FRAGMENT_ID";
     private String mImage_URL;
     private String mFragmentID;
     private File myDir;
 
-    private final String URL_KEY = "com.example.arturkasymov.application_a.image_URL";
-    private final String ID_KEY = "com.example.arturkasymov.application_a.FRAGMENT_ID";
-
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1){
             requestPermissions(new String[]{
@@ -56,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
         myDir.mkdirs();
         }
 
-
-        Fragment fragment=null;
+        Fragment fragment;
         if (getIntent().hasExtra(EXTRA_FRAGMENT_ID)){
             fragment=new ImageFragment();
             mImage_URL = getIntent().getExtras().getString(EXTRA_IMAGE_URL);
@@ -70,9 +63,7 @@ public class MainActivity extends AppCompatActivity {
             bundle.putString(URL_KEY, mImage_URL);
             bundle.putString(ID_KEY, mFragmentID);
             bundle.putString("namber", namber);
-
             fragment.setArguments(bundle);
-
         } else
         {
             fragment= new LauncherFragment();
@@ -82,7 +73,5 @@ public class MainActivity extends AppCompatActivity {
         ft.replace(R.id.fragmentContainer, fragment);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commit();
-
     }
-
 }
