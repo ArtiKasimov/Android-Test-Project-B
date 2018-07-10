@@ -14,7 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,7 +79,13 @@ public class ImageFragment extends Fragment {
                 if (!myDir.exists()) {
                     myDir.mkdirs();
                 }
-                loadPicture2();
+                v.postDelayed(new Runnable() {
+                    public void run() {
+                        loadPicture2();
+                    }
+                }, 500);
+
+
 
                 new Thread(new Runnable() {
                     @Override
@@ -85,13 +94,7 @@ public class ImageFragment extends Fragment {
                     }
                 }).start();
 
-                //v.postDelayed(new Runnable() {
-                //    public void run() {
-                //        Toast toast;
-                //        toast = Toast.makeText(getContext(), "delated", Toast.LENGTH_SHORT);
-                //        toast.show();
-                //    }
-                //}, 15000);
+
             }
         }
         return v;
@@ -168,41 +171,51 @@ public class ImageFragment extends Fragment {
     }
 
     public void loadPicture2(){
-        Picasso.with(getContext())
-        .load(mImage_URL)
-        .into(new Target() {
-                  @Override
-                  public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                      try {
-                          String name;
-                          boolean isPNG = mImage_URL.length() - mImage_URL.lastIndexOf(".png") == 4;
-                          FileOutputStream out;
-                          if (isPNG){
-                              name = new Date().toString() + ".png";
-                              myDir = new File(myDir, name);
-                              out = new FileOutputStream(myDir);
-                              bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-                          }else {
-                              name = new Date().toString() + ".jpg";
-                              myDir = new File(myDir, name);
-                              out = new FileOutputStream(myDir);
-                              bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                          }
-                          out.flush();
-                          out.close();
-                      } catch(Exception e){
-                          e.printStackTrace();
-                      }
-                  }
+        Picasso picasso =
+        Picasso.with(getContext());
+        final RequestCreator requestCreator = picasso.load(mImage_URL);
+        requestCreator.fetch(new Callback() {
+            @Override
+            public void onSuccess() {
+                requestCreator.into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        try {
+                            String name;
+                            boolean isPNG = mImage_URL.length() - mImage_URL.lastIndexOf(".png") == 4;
+                            FileOutputStream out;
+                            if (isPNG){
+                                name = new Date().toString() + ".png";
+                                myDir = new File(myDir, name);
+                                out = new FileOutputStream(myDir);
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                            }else {
+                                name = new Date().toString() + ".jpg";
+                                myDir = new File(myDir, name);
+                                out = new FileOutputStream(myDir);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                            }
+                            out.flush();
+                            out.close();
+                        } catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
 
-                  @Override
-                  public void onBitmapFailed(Drawable errorDrawable) {
-                  }
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                    }
 
-                  @Override
-                  public void onPrepareLoad(Drawable placeHolderDrawable) {
-                  }
-              }
-        );
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    }
+                });
+            }
+
+            @Override
+            public void onError() {
+            }
+        });
+
     }
 }
