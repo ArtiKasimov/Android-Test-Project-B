@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
             },1000);
-            myDir = new File("/sdcard/BIGDIG/test/B");
+            myDir = new File(Environment.getExternalStorageDirectory(),"/BIGDIG/test/B/");
         }else{
             myDir = new File(this.getFilesDir() + "/BIGDIG/test/B/");
         }
